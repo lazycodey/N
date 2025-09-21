@@ -48,6 +48,21 @@ export async function POST(
       const duration = Date.now() - startTime
       
       // Save execution record
+      // Check if user exists, if not create a default user
+      let user = await db.user.findUnique({
+        where: { id: 'temp-user-id' }
+      })
+
+      if (!user) {
+        user = await db.user.create({
+          data: {
+            id: 'temp-user-id',
+            email: 'temp-user-id@temp.com',
+            name: 'Temp User'
+          }
+        })
+      }
+
       await db.execution.create({
         data: {
           command,
@@ -56,7 +71,7 @@ export async function POST(
           exitCode: 0,
           status: 'completed',
           duration,
-          userId: 'temp-user-id', // In real app, this would come from auth
+          userId: user.id,
           projectId: params.id
         }
       })
@@ -71,6 +86,21 @@ export async function POST(
       const duration = Date.now() - startTime
       
       // Save failed execution record
+      // Check if user exists, if not create a default user
+      let user = await db.user.findUnique({
+        where: { id: 'temp-user-id' }
+      })
+
+      if (!user) {
+        user = await db.user.create({
+          data: {
+            id: 'temp-user-id',
+            email: 'temp-user-id@temp.com',
+            name: 'Temp User'
+          }
+        })
+      }
+
       await db.execution.create({
         data: {
           command,
@@ -79,7 +109,7 @@ export async function POST(
           exitCode: execError.code || 1,
           status: 'failed',
           duration,
-          userId: 'temp-user-id', // In real app, this would come from auth
+          userId: user.id,
           projectId: params.id
         }
       })

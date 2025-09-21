@@ -46,12 +46,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check if user exists, if not create a default user
+    let user = await db.user.findUnique({
+      where: { id: ownerId }
+    })
+
+    if (!user) {
+      user = await db.user.create({
+        data: {
+          id: ownerId,
+          email: `${ownerId}@temp.com`,
+          name: 'Temp User'
+        }
+      })
+    }
+
     const project = await db.project.create({
       data: {
         name,
         description,
         language,
-        ownerId,
+        ownerId: user.id,
         files: {
           create: files.map((file: any) => ({
             name: file.name,
