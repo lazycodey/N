@@ -259,6 +259,22 @@ export default function Home() {
     }
   }
 
+  const handleFilesChange = (newFiles: File[]) => {
+    setFiles(newFiles)
+    // If the active file was modified, update it
+    if (activeFile) {
+      const updatedActiveFile = newFiles.find(f => f.id === activeFile.id)
+      if (updatedActiveFile) {
+        setActiveFile(updatedActiveFile)
+      }
+    }
+  }
+
+  const handleRunCommand = (command: string) => {
+    setTerminalOutput(prev => [...prev, `$ ${command}`, ''])
+    sendTerminalCommand(command, currentUser.id)
+  }
+
   const handleReplaceCode = (code: string) => {
     if (activeFile) {
       handleFileUpdate(activeFile.id, code)
@@ -404,6 +420,8 @@ export default function Home() {
         projectId={currentProject.id}
         onInsertCode={handleInsertCode}
         onReplaceCode={handleReplaceCode}
+        onFilesChange={handleFilesChange}
+        onRunCommand={handleRunCommand}
       >
         <CollaborationIndicator
           onlineUsers={onlineUsers}

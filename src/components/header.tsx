@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AIAssistant } from '@/components/ai-assistant'
+import { AIAgent } from '@/components/ai-agent'
 import { 
   Play, 
   Save, 
@@ -23,6 +24,8 @@ interface HeaderProps {
   projectId?: string
   onInsertCode?: (code: string) => void
   onReplaceCode?: (code: string) => void
+  onFilesChange?: (files: Array<{ name: string; content: string; language: string }>) => void
+  onRunCommand?: (command: string) => void
 }
 
 export function Header({ 
@@ -34,7 +37,9 @@ export function Header({
   files = [],
   projectId,
   onInsertCode,
-  onReplaceCode 
+  onReplaceCode,
+  onFilesChange,
+  onRunCommand
 }: HeaderProps) {
   return (
     <header className="h-12 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -66,14 +71,22 @@ export function Header({
             </Button>
             
             {onInsertCode && onReplaceCode && (
-              <AIAssistant
-                code={code}
-                language={language}
-                files={files}
-                projectId={projectId}
-                onInsertCode={onInsertCode}
-                onReplaceCode={onReplaceCode}
-              />
+              <>
+                <AIAssistant
+                  code={code}
+                  language={language}
+                  files={files}
+                  projectId={projectId}
+                  onInsertCode={onInsertCode}
+                  onReplaceCode={onReplaceCode}
+                />
+                <AIAgent
+                  files={files}
+                  projectId={projectId}
+                  onFilesChange={onFilesChange}
+                  onRunCommand={onRunCommand}
+                />
+              </>
             )}
           </div>
           
