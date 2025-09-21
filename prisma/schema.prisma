@@ -17,16 +17,94 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
+  avatar    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  projects  Project[]
+  executions Execution[]
+  sharedProjects SharedProject[]
+  
+  @@map("users")
 }
 
-model Post {
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  language    String   // "javascript", "python", "java", etc.
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  files       File[]
+  executions  Execution[]
+  sharedWith  SharedProject[]
+  
+  @@map("projects")
+}
+
+model File {
   id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
+  name      String
+  content   String
+  language  String   // File type/language for syntax highlighting
+  path      String   // File path within the project
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, path])
+  @@map("files")
+}
+
+model Execution {
+  id          String   @id @default(cuid())
+  command     String   // Command that was executed
+  output      String?  // Output from execution
+  error       String?  // Error output if any
+  exitCode    Int?     // Exit code
+  status      String   // "running", "completed", "failed"
+  duration    Int?     // Execution time in milliseconds
+  createdAt   DateTime @default(now())
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@map("executions")
+}
+
+model SharedProject {
+  id        String   @id @default(cuid())
+  permission String   // "read", "write", "admin"
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, projectId])
+  @@map("shared_projects")
+}
+
+model ProjectTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  language    String
+  files       Json     // Array of {name, content, path} objects
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  @@map("project_templates")
 }
