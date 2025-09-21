@@ -19,6 +19,8 @@ interface HeaderProps {
   children?: React.ReactNode
   code?: string
   language?: string
+  files?: Array<{ name: string; content: string; language: string }>
+  projectId?: string
   onInsertCode?: (code: string) => void
   onReplaceCode?: (code: string) => void
 }
@@ -29,6 +31,8 @@ export function Header({
   children, 
   code = '', 
   language = '', 
+  files = [],
+  projectId,
   onInsertCode,
   onReplaceCode 
 }: HeaderProps) {
@@ -65,6 +69,8 @@ export function Header({
               <AIAssistant
                 code={code}
                 language={language}
+                files={files}
+                projectId={projectId}
                 onInsertCode={onInsertCode}
                 onReplaceCode={onReplaceCode}
               />

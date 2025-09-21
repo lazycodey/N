@@ -400,6 +400,8 @@ export default function Home() {
         onRun={handleRunCode}
         code={activeFile?.content || ''}
         language={activeFile?.language || ''}
+        files={files}
+        projectId={currentProject.id}
         onInsertCode={handleInsertCode}
         onReplaceCode={handleReplaceCode}
       >
